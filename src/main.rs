@@ -4,6 +4,7 @@ use clap::Parser;
 use std::path::PathBuf;
 use chrono::prelude::{DateTime, Local, Utc};
 use dirs;
+use std::fs;
 
 #[derive(Parser)]
 struct Cli {
@@ -18,12 +19,20 @@ fn main() {
         Ok(path) => PathBuf::from(path),
         Err(e) => dirs::home_dir().unwrap()
     };
-    let stash_today = stash_root.join(Local::now().format("%Y-%m-%d").to_string());
+    let stash_today = stash_root.join(Local::now().format("%Y-%m-%d-%H%M%S").to_string());
 
-    println!("{:?}", stash_today.into_os_string().into_string());
+    if stash_today.exists() {
+        // TODO: error handling
+    }
 
-    // TODO: confirm today's stashdir/YYYY-MM-DD existence
-    // if exist, make stashdir/YYYY-MM-DD.1
+    // TODO: support recursive
+    fs::create_dir(&stash_today);
 
-    // TODO: move ~/Desktop/* to stashdir
+    let desktop = dirs::desktop_dir().unwrap();
+
+    for e in fs::read_dir(desktop).unwrap() {
+        let e = e.unwrap();
+        println!("{:?}→{:?}", e.path(), stash_today.join(e.file_name()));
+        fs::rename(e.path(), stash_today.join(e.file_name())).unwrap()
+    }
 }
