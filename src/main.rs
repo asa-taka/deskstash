@@ -1,10 +1,11 @@
 #![allow(unused)]
 
+use std::fs;
+use std::path::PathBuf;
+
 use chrono::prelude::{DateTime, Local, Utc};
 use clap::Parser;
 use dirs;
-use std::fs;
-use std::path::PathBuf;
 
 #[derive(Parser)]
 struct Cli {
