@@ -9,3 +9,9 @@ edition = "2021"
 clap = { version = "3.0", features = ["derive"] }
 chrono = "0.4"
 dirs = "4.0"
+
+[profile.release]
+opt-level = 'z'
+lto = true
+codegen-units = 1
+panic = 'abort'
