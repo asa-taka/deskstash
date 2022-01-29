@@ -23,21 +23,13 @@ fn main() -> Result<(), std::io::Error> {
             .join(".deskstash"),
     };
     let stash_today = stash_root.join(Local::now().format("%Y-%m-%d-%H%M%S").to_string());
-
-    if stash_today.exists() {
-        // TODO: error handling
-    }
-
-    // TODO: support recursive
-    fs::create_dir(&stash_today);
-
     let desktop = dirs::desktop_dir().expect("Desktop dir cannot detected.");
 
+    fs::create_dir_all(&stash_today)?;
     for e in fs::read_dir(desktop)? {
         let e = e?;
         println!("{:?}→{:?}", e.path(), stash_today.join(e.file_name()));
         fs::rename(e.path(), stash_today.join(e.file_name()))?
     }
-
     Ok(())
 }
