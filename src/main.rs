@@ -28,8 +28,10 @@ fn main() -> Result<(), std::io::Error> {
     fs::create_dir_all(&stash_today)?;
     for e in fs::read_dir(desktop)? {
         let e = e?;
-        println!("{:?}→{:?}", e.path(), stash_today.join(e.file_name()));
-        fs::rename(e.path(), stash_today.join(e.file_name()))?
+        let src = e.path();
+        let dest = stash_today.join(e.file_name());
+        println!("{:?} → {:?}", src, dest);
+        fs::rename(src, dest)?
     }
     Ok(())
 }
