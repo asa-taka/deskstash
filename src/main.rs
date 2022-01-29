@@ -12,12 +12,12 @@ struct Cli {
     dir: PathBuf,
 }
 
-fn main() {
+fn main() -> Result<(), std::io::Error> {
     let args = Cli::parse();
     let mut dir = args.dir;
     let stash_root = match std::env::var("DESKSTASH_DIR") {
         Ok(path) => PathBuf::from(path),
-        Err(e) => dirs::home_dir().unwrap()
+        Err(e) => dirs::home_dir().expect("Home dir cannot detected.").join(".deskstash"),
     };
     let stash_today = stash_root.join(Local::now().format("%Y-%m-%d-%H%M%S").to_string());
 
@@ -28,11 +28,13 @@ fn main() {
     // TODO: support recursive
     fs::create_dir(&stash_today);
 
-    let desktop = dirs::desktop_dir().unwrap();
+    let desktop = dirs::desktop_dir().expect("Desktop dir cannot detected.");
 
-    for e in fs::read_dir(desktop).unwrap() {
-        let e = e.unwrap();
+    for e in fs::read_dir(desktop)? {
+        let e = e?;
         println!("{:?}→{:?}", e.path(), stash_today.join(e.file_name()));
-        fs::rename(e.path(), stash_today.join(e.file_name())).unwrap()
+        fs::rename(e.path(), stash_today.join(e.file_name()))?
     }
+
+    Ok(())
 }
