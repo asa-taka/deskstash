@@ -1,10 +1,10 @@
 #![allow(unused)]
 
-use clap::Parser;
-use std::path::PathBuf;
 use chrono::prelude::{DateTime, Local, Utc};
+use clap::Parser;
 use dirs;
 use std::fs;
+use std::path::PathBuf;
 
 #[derive(Parser)]
 struct Cli {
@@ -17,7 +17,9 @@ fn main() -> Result<(), std::io::Error> {
     let mut dir = args.dir;
     let stash_root = match std::env::var("DESKSTASH_DIR") {
         Ok(path) => PathBuf::from(path),
-        Err(e) => dirs::home_dir().expect("Home dir cannot detected.").join(".deskstash"),
+        Err(e) => dirs::home_dir()
+            .expect("Home dir cannot detected.")
+            .join(".deskstash"),
     };
     let stash_today = stash_root.join(Local::now().format("%Y-%m-%d-%H%M%S").to_string());
 
